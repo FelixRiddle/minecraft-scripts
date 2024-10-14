@@ -3,6 +3,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { spawn } from "child_process";
 import { EventEmitter } from "events";
+import colors from "colors";
+import { logOutput } from "log";
 
 /**
  * Minecraft server
@@ -119,16 +121,6 @@ export default class MinecraftServer extends EventEmitter {
 	}
 
 	public logOutput() {
-		this.on("output", (data) => {
-			console.log(`Minecraft Server: ${data}`);
-		});
-
-		this.on("error", (data) => {
-			console.error(`Minecraft Server Error: ${data}`);
-		});
-
-		this.on("close", (code) => {
-			console.log(`Minecraft Server exited with code ${code}`);
-		});
+		logOutput("Minecraft server", "blue", this);
 	}
 }

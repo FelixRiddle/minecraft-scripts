@@ -2,6 +2,7 @@ import { exec } from "child_process";
 import * as fs from "fs";
 import { spawn } from "child_process";
 import { EventEmitter } from "events";
+import { logOutput } from "log";
 
 /**
  * Launcher class
@@ -94,16 +95,6 @@ export default class Launcher extends EventEmitter {
 	}
 
 	public logOutput() {
-		this.on("output", (data) => {
-			console.log(`TLauncher: ${data}`);
-		});
-
-		this.on("error", (data) => {
-			console.error(`TLauncher Error: ${data}`);
-		});
-
-		this.on("close", (code) => {
-			console.log(`TLauncher exited with code ${code}`);
-		});
+		logOutput("TLauncher", "magenta", this);
 	}
 }
