@@ -64,7 +64,6 @@ async function mainCommand() {
 				alias: "sp",
 				type: "string",
 				describe: "Path to the Minecraft server directory",
-				demandOption: true,
 			});
 
 			yargs.option("script", {
@@ -78,16 +77,26 @@ async function mainCommand() {
 				alias: "lp",
 				type: "string",
 				describe: "Path to the TLauncher.jar file",
-				demandOption: true,
 			});
 		},
 		async (argv) => {
-			const serverPath = argv.serverPath as string;
+			const serverPath =
+				(argv.serverPath as string) || process.env.SERVER_PATH;
 			const script = argv.script as string;
-			const launcherPath = argv.launcherPath as string;
-			console.log(`Server Path: ${serverPath}`);
-			console.log(`Script: ${script}`);
-			console.log(`TLauncher Path: ${launcherPath}`);
+			const launcherPath =
+				(argv.launcherPath as string) || process.env.LAUNCHER_PATH;
+
+			if (!serverPath) {
+				throw new Error(
+					"Server path not provided. Please set SERVER_PATH environment variable or use --serverPath option."
+				);
+			}
+
+			if (!launcherPath) {
+				throw new Error(
+					"Launcher path not provided. Please set LAUNCHER_PATH environment variable or use --launcherPath option."
+				);
+			}
 
 			// Run Minecraft server
 			const minecraftServer = new MinecraftServer(serverPath, script);
