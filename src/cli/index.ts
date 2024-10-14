@@ -60,8 +60,8 @@ async function mainCommand() {
 		"both",
 		"Runs both Minecraft server and TLauncher",
 		(yargs) => {
-			yargs.option("directory", {
-				alias: "d",
+			yargs.option("serverPath", {
+				alias: "sp",
 				type: "string",
 				describe: "Path to the Minecraft server directory",
 				demandOption: true,
@@ -82,12 +82,15 @@ async function mainCommand() {
 			});
 		},
 		async (argv) => {
-			const directory = argv.directory as string;
+			const serverPath = argv.serverPath as string;
 			const script = argv.script as string;
 			const launcherPath = argv.launcherPath as string;
+			console.log(`Server Path: ${serverPath}`);
+			console.log(`Script: ${script}`);
+			console.log(`TLauncher Path: ${launcherPath}`);
 
 			// Run Minecraft server
-			const minecraftServer = new MinecraftServer(directory, script);
+			const minecraftServer = new MinecraftServer(serverPath, script);
 			minecraftServer.runShell();
 
 			// Run TLauncher
