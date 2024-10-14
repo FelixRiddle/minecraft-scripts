@@ -1,29 +1,37 @@
-import MinecraftServer from "MinecraftServer";
+import MinecraftServer from "../MinecraftServer";
 import yargs from "yargs";
 
 /**
  * Run commands
  */
 async function mainCommand() {
-	yargs.command("hello", "Prints a hello message", () => {
-		console.log("Hello, World!");
-	});
+	yargs.command(
+		"minecraft",
+		"Runs the Minecraft server",
+		(yargs) => {
+			yargs.option("directory", {
+				alias: "d",
+				type: "string",
+				describe: "Path to the Minecraft server directory",
+				demandOption: true,
+			});
 
-	yargs.option("name", {
-		alias: "n",
-		type: "string",
-		describe: "Your name",
-	});
-
-	// Example usage:
-	const server = new MinecraftServer(
-		"/home/felix/Documents/Data/Minecraft/Servers/modded-main"
+			yargs.option("script", {
+				alias: "s",
+				type: "string",
+				describe: "Name of the script to run (default: run.sh)",
+				default: "run.sh",
+			});
+		},
+		async (argv) => {
+			const server = new MinecraftServer(argv.directory as string, argv.script as string);
+			server
+				.run()
+				.then((output: any) => console.log(output))
+				.catch((error: any) => console.error(error));
+		}
 	);
-	server
-		.run()
-		.then((output) => console.log(output))
-		.catch((error) => console.error(error));
-	
+
 	yargs.parse();
 }
 
