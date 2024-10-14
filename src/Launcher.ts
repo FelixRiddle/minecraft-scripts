@@ -89,8 +89,8 @@ export default class Launcher extends EventEmitter {
 	 * @param event The event name.
 	 * @param listener The event listener.
 	 */
-	public on(event: string, listener: (...args: any[]) => void) {
-		super.on(event, listener);
+	public on(eventName: string, listener: (...args: any[]) => void): this {
+		return super.on(eventName, listener);
 	}
 
 	public logOutput() {

@@ -110,13 +110,14 @@ export default class MinecraftServer extends EventEmitter {
 	/**
 	 * Listens for events.
 	 *
-	 * @param event The event name.
+	 * @param eventName The event name.
 	 * @param listener The event listener.
+	 * @returns This EventEmitter instance.
 	 */
-	public on(event: string, listener: (...args: any[]) => void) {
-		super.on(event, listener);
+	public on(eventName: string, listener: (...args: any[]) => void): this {
+		return super.on(eventName, listener);
 	}
-	
+
 	public logOutput() {
 		this.on("output", (data) => {
 			console.log(`Minecraft Server: ${data}`);
