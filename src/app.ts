@@ -1,4 +1,4 @@
-import mainCommand from "cli";
+import mainCommand from "./cli/index";
 import { initializeDotenv } from "felixriddle.ts-app-models";
 
 /**
