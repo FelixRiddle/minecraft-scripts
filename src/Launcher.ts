@@ -1,12 +1,15 @@
 import { exec } from "child_process";
 import * as fs from "fs";
+import { spawn } from "child_process";
+import { EventEmitter } from "events";
 
 /**
  * Launcher class
  */
-export default class Launcher {
+export default class Launcher extends EventEmitter {
 	private launcherPath: string;
 	private javaCommand: string;
+	private process: any;
 
 	/**
 	 * Initializes a new instance of the Launcher class.
@@ -14,6 +17,7 @@ export default class Launcher {
 	 * @param launcherPath The path to the TLauncher.jar file.
 	 */
 	constructor(launcherPath: string) {
+		super();
 		this.launcherPath = launcherPath;
 		this.javaCommand = "java -jar";
 	}
@@ -49,5 +53,43 @@ export default class Launcher {
 				}
 			});
 		});
+	}
+
+	/**
+	 * Runs the TLauncher.jar file in a shell environment.
+	 */
+	public runShell() {
+		if (!this.launcherExists()) {
+			throw new Error(
+				`TLauncher.jar file not found at '${this.launcherPath}'.`
+			);
+		}
+
+		const command = `${this.javaCommand} ${this.launcherPath}`;
+		this.process = spawn(command, {
+			shell: true,
+		});
+
+		this.process.stdout.on("data", (data: any) => {
+			this.emit("output", data.toString());
+		});
+
+		this.process.stderr.on("data", (data: any) => {
+			this.emit("error", data.toString());
+		});
+
+		this.process.on("close", (code: any) => {
+			this.emit("close", code);
+		});
+	}
+
+	/**
+	 * Listens for events.
+	 *
+	 * @param event The event name.
+	 * @param listener The event listener.
+	 */
+	public on(event: string, listener: (...args: any[]) => void) {
+		super.on(event, listener);
 	}
 }

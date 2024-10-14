@@ -1,7 +1,6 @@
 import Launcher from "../Launcher";
 import MinecraftServer from "../MinecraftServer";
 import yargs from "yargs";
-import { spawn } from "child_process";
 
 /**
  * Run commands
@@ -87,37 +86,41 @@ async function mainCommand() {
 			const script = argv.script as string;
 			const launcherPath = argv.launcherPath as string;
 
-			const serverCmd = `cd ${directory} && chmod +x ${script} && ./${script}`;
-			const launcherCmd = `java -jar ${launcherPath}`;
+			// Run Minecraft server
+			const minecraftServer = new MinecraftServer(directory, script);
+			minecraftServer.runShell();
 
-			const serverProcess = spawn(serverCmd, {
-				shell: true,
-			});
-			const launcherProcess = spawn(
-				launcherCmd,
-				{
-					shell: true,
-				}
-			);
+			// Run TLauncher
+			const launcher = new Launcher(launcherPath);
+			launcher.runShell();
 
-			serverProcess.stdout.on("data", (data: any) => {
-				console.log(`Minecraft Server: ${data.toString()}`);
+			// Log output
+			minecraftServer.on("output", (data) => {
+				console.log(`Minecraft Server: ${data}`);
 			});
 
-			serverProcess.stderr.on("data", (data: any) => {
-				console.error(`Minecraft Server Error: ${data.toString()}`);
+			minecraftServer.on("error", (data) => {
+				console.error(`Minecraft Server Error: ${data}`);
 			});
 
-			launcherProcess.stdout.on("data", (data: any) => {
-				console.log(`TLauncher: ${data.toString()}`);
+			minecraftServer.on("close", (code) => {
+				console.log(`Minecraft Server exited with code ${code}`);
 			});
 
-			launcherProcess.stderr.on("data", (data: any) => {
-				console.error(`TLauncher Error: ${data.toString()}`);
+			launcher.on("output", (data) => {
+				console.log(`TLauncher: ${data}`);
+			});
+
+			launcher.on("error", (data) => {
+				console.error(`TLauncher Error: ${data}`);
+			});
+
+			launcher.on("close", (code) => {
+				console.log(`TLauncher exited with code ${code}`);
 			});
 		}
 	);
-	
+
 	yargs.parse();
 }
 

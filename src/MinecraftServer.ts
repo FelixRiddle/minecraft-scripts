@@ -1,13 +1,16 @@
 import { exec } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import { spawn } from "child_process";
+import { EventEmitter } from "events";
 
 /**
  * Minecraft server
  */
-export default class MinecraftServer {
+export default class MinecraftServer extends EventEmitter {
 	private directoryPath: string;
 	private scriptName: string;
+	private process: any;
 
 	/**
 	 * Initializes a new instance of the MinecraftServer class.
@@ -16,6 +19,7 @@ export default class MinecraftServer {
 	 * @param scriptName The name of the script to run (default: 'run.sh').
 	 */
 	constructor(directoryPath: string, scriptName: string = "run.sh") {
+		super();
 		this.directoryPath = directoryPath;
 		this.scriptName = scriptName;
 	}
@@ -67,5 +71,49 @@ export default class MinecraftServer {
 				}
 			});
 		});
+	}
+
+	/**
+	 * Changes to the specified directory and runs the script in a shell environment.
+	 */
+	public runShell() {
+		if (!this.directoryExists()) {
+			throw new Error(
+				`Directory '${this.directoryPath}' does not exist.`
+			);
+		}
+
+		if (!this.scriptExists()) {
+			throw new Error(
+				`Script '${this.scriptName}' does not exist in directory '${this.directoryPath}'.`
+			);
+		}
+
+		const command = `cd ${this.directoryPath} && chmod +x ${this.scriptName} && ./${this.scriptName}`;
+		this.process = spawn(command, {
+			shell: true,
+		});
+
+		this.process.stdout.on("data", (data: any) => {
+			this.emit("output", data.toString());
+		});
+
+		this.process.stderr.on("data", (data: any) => {
+			this.emit("error", data.toString());
+		});
+
+		this.process.on("close", (code: any) => {
+			this.emit("close", code);
+		});
+	}
+
+	/**
+	 * Listens for events.
+	 *
+	 * @param event The event name.
+	 * @param listener The event listener.
+	 */
+	public on(event: string, listener: (...args: any[]) => void) {
+		super.on(event, listener);
 	}
 }
