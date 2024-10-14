@@ -95,29 +95,8 @@ async function mainCommand() {
 			launcher.runShell();
 
 			// Log output
-			minecraftServer.on("output", (data) => {
-				console.log(`Minecraft Server: ${data}`);
-			});
-
-			minecraftServer.on("error", (data) => {
-				console.error(`Minecraft Server Error: ${data}`);
-			});
-
-			minecraftServer.on("close", (code) => {
-				console.log(`Minecraft Server exited with code ${code}`);
-			});
-
-			launcher.on("output", (data) => {
-				console.log(`TLauncher: ${data}`);
-			});
-
-			launcher.on("error", (data) => {
-				console.error(`TLauncher Error: ${data}`);
-			});
-
-			launcher.on("close", (code) => {
-				console.log(`TLauncher exited with code ${code}`);
-			});
+			minecraftServer.logOutput();
+			launcher.logOutput();
 		}
 	);
 

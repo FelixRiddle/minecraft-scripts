@@ -116,4 +116,18 @@ export default class MinecraftServer extends EventEmitter {
 	public on(event: string, listener: (...args: any[]) => void) {
 		super.on(event, listener);
 	}
+	
+	public logOutput() {
+		this.on("output", (data) => {
+			console.log(`Minecraft Server: ${data}`);
+		});
+
+		this.on("error", (data) => {
+			console.error(`Minecraft Server Error: ${data}`);
+		});
+
+		this.on("close", (code) => {
+			console.log(`Minecraft Server exited with code ${code}`);
+		});
+	}
 }

@@ -92,4 +92,18 @@ export default class Launcher extends EventEmitter {
 	public on(event: string, listener: (...args: any[]) => void) {
 		super.on(event, listener);
 	}
+
+	public logOutput() {
+		this.on("output", (data) => {
+			console.log(`TLauncher: ${data}`);
+		});
+
+		this.on("error", (data) => {
+			console.error(`TLauncher Error: ${data}`);
+		});
+
+		this.on("close", (code) => {
+			console.log(`TLauncher exited with code ${code}`);
+		});
+	}
 }
